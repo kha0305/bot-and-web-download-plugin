@@ -175,7 +175,10 @@
       limit: 24,
       total: 0,
       totalPages: 1,
+      chatgptConfigured: false,
       chatgptAvailable: false,
+      chatgptAuthError: "",
+      provider: "OpenAI-compatible",
       chatgptModel: "ChatGPT",
       chatgptModels: [],
       defaultModel: "gpt-5-nano",
@@ -489,7 +492,10 @@
         if (!response.ok) return;
         const data = await response.json();
 
+        appState.chatgptConfigured = !!data.chatgptConfigured;
         appState.chatgptAvailable = !!data.chatgptAvailable;
+        appState.chatgptAuthError = data.chatgptAuthError || "";
+        appState.provider = data.provider || "OpenAI-compatible";
         appState.chatgptModel = data.chatgptModel || "ChatGPT";
         appState.chatgptModels = Array.isArray(data.chatgptModels) ? data.chatgptModels : [];
         appState.defaultModel = appState.chatgptModel || appState.defaultModel;
@@ -505,11 +511,15 @@
         const textOption = textEngineSelect.querySelector('option[value="chatgpt"]');
         const fileOption = fileEngineSelect.querySelector('option[value="chatgpt"]');
         const chatgptLabel = appState.chatgptAvailable
-          ? `${appState.chatgptModel} (${data.provider || "OpenAI-compatible"})`
-          : "ChatGPT (chưa cấu hình server)";
+          ? `${appState.chatgptModel} (${appState.provider})`
+          : appState.chatgptConfigured
+            ? `${appState.chatgptModel} (${appState.provider} - lỗi xác thực)`
+            : "ChatGPT (chưa cấu hình server)";
 
         if (textOption) textOption.textContent = chatgptLabel;
         if (fileOption) fileOption.textContent = chatgptLabel;
+        if (textOption) textOption.disabled = !appState.chatgptAvailable;
+        if (fileOption) fileOption.disabled = !appState.chatgptAvailable;
 
         const supportedFileExtensions = Array.isArray(data.supportedFileExtensions)
           ? data.supportedFileExtensions
@@ -535,6 +545,17 @@
         if (!appState.chatgptAvailable) {
           textEngineSelect.value = "google";
           fileEngineSelect.value = "google";
+          if (appState.chatgptAuthError) {
+            const authHint =
+              appState.chatgptAuthError.length > 260
+                ? `${appState.chatgptAuthError.slice(0, 260)}...`
+                : appState.chatgptAuthError;
+            setInlineStatus(
+              fileTranslateStatus,
+              `ChatGPT tạm tắt: ${authHint}`,
+              "warning",
+            );
+          }
         }
         updateModelControls();
       } catch (error) {

@@ -94,6 +94,13 @@ function buildInputError(message) {
 
 const DEFAULT_OPENAI_BASE_URL = "https://api.openai.com/v1";
 const DEFAULT_AGENT_ROUTER_BASE_URL = "https://agentrouter.org/v1";
+const CHATGPT_AUTH_CHECK_TTL_MS = 90 * 1000;
+let chatgptAuthCheckCache = {
+  cacheKey: "",
+  checkedAt: 0,
+  result: null,
+  pending: null,
+};
 const DEFAULT_TRANSLATE_MODELS = Object.freeze([
   "gpt-5-nano",
   "gpt-4o-mini",
@@ -205,6 +212,112 @@ class Translator {
     return Translator.isAgentRouterBase(Translator.getOpenAIBaseUrl())
       ? "AgentRouter"
       : "OpenAI";
+  }
+
+  static async checkChatgptAvailability({ force = false } = {}) {
+    const baseUrl = Translator.getOpenAIBaseUrl();
+    const provider = Translator.getProviderName();
+    const apiKey = Translator.getChatgptApiKey();
+    if (!apiKey) {
+      return {
+        configured: false,
+        available: false,
+        status: null,
+        provider,
+        message:
+          "Server chưa cấu hình OPENAI_API_KEY hoặc AGENT_ROUTER_TOKEN.",
+      };
+    }
+
+    const cacheKey = `${baseUrl}|${apiKey.slice(0, 8)}|${apiKey.length}`;
+    const now = Date.now();
+    if (
+      !force &&
+      chatgptAuthCheckCache.result &&
+      chatgptAuthCheckCache.cacheKey === cacheKey &&
+      now - chatgptAuthCheckCache.checkedAt < CHATGPT_AUTH_CHECK_TTL_MS
+    ) {
+      return chatgptAuthCheckCache.result;
+    }
+
+    if (
+      !force &&
+      chatgptAuthCheckCache.pending &&
+      chatgptAuthCheckCache.cacheKey === cacheKey
+    ) {
+      return chatgptAuthCheckCache.pending;
+    }
+
+    const request = (async () => {
+      try {
+        const response = await axios.get(`${baseUrl}/models`, {
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+          },
+          timeout: 15000,
+          validateStatus: () => true,
+        });
+        const status = Number(response?.status || 0);
+        const providerMessage =
+          response?.data?.error?.message || response?.data?.message || "";
+        let result;
+        if (status >= 200 && status < 300) {
+          result = {
+            configured: true,
+            available: true,
+            status,
+            provider,
+            message: null,
+          };
+        } else {
+          result = {
+            configured: true,
+            available: false,
+            status,
+            provider,
+            message:
+              providerMessage ||
+              `Xác thực thất bại (${status}) tại ${baseUrl}.`,
+          };
+        }
+        chatgptAuthCheckCache = {
+          cacheKey,
+          checkedAt: Date.now(),
+          result,
+          pending: null,
+        };
+        return result;
+      } catch (error) {
+        const status = Number(error?.response?.status || 0) || null;
+        const providerMessage =
+          error?.response?.data?.error?.message ||
+          error?.response?.data?.message ||
+          error?.message ||
+          "Không thể xác thực provider.";
+        const result = {
+          configured: true,
+          available: false,
+          status,
+          provider,
+          message: providerMessage,
+        };
+        chatgptAuthCheckCache = {
+          cacheKey,
+          checkedAt: Date.now(),
+          result,
+          pending: null,
+        };
+        return result;
+      }
+    })();
+
+    chatgptAuthCheckCache = {
+      ...chatgptAuthCheckCache,
+      cacheKey,
+      pending: request,
+    };
+    return request;
   }
 
   static getDefaultModelId() {

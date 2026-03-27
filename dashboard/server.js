@@ -203,6 +203,23 @@ function buildTranslateApiError(error) {
   }
 
   if (status === 401 || status === 403) {
+    const errorType =
+      String(error?.response?.data?.type || "").toLowerCase() ||
+      String(error?.response?.data?.error?.type || "").toLowerCase();
+    const messageLower = String(providerMessage || "").toLowerCase();
+    if (
+      errorType.includes("unauthorized_client") ||
+      messageLower.includes("unauthorized client detected")
+    ) {
+      return {
+        status: 502,
+        message:
+          `${provider} từ chối client ở cấp tài khoản (${status}) tại ${baseUrl}. ` +
+          "Lỗi này ảnh hưởng toàn bộ model, không phải lỗi riêng từng model. " +
+          "Hãy tạo token API mới hoặc liên hệ support provider để mở quyền client.",
+      };
+    }
+
     const hint =
       providerMessage ||
       "API key/token không hợp lệ hoặc tài khoản chưa được cấp quyền.";
@@ -573,9 +590,13 @@ app.get("/api/public/download/:pluginId", (req, res) => {
   }
 });
 
-app.get("/api/public/translate/meta", (req, res) => {
+app.get("/api/public/translate/meta", async (req, res) => {
+  const auth = await Translator.checkChatgptAvailability();
   res.json({
-    chatgptAvailable: !!Translator.getChatgptApiKey(),
+    chatgptConfigured: !!auth.configured,
+    chatgptAvailable: !!auth.available,
+    chatgptAuthStatus: auth.status,
+    chatgptAuthError: auth.message || null,
     chatgptModel: Translator.getChatgptModel(),
     chatgptModels: Translator.listModelMeta(),
     defaultTargetLanguage: Translator.getDefaultTargetLanguageId(),
@@ -584,7 +605,7 @@ app.get("/api/public/translate/meta", (req, res) => {
     skills: Translator.listSkillMeta(),
     maxFileSizeBytes: WEB_TRANSLATE_FILE_MAX_BYTES,
     supportedFileExtensions: Translator.getSupportedTranslateExtensions(),
-    provider: Translator.getProviderName(),
+    provider: auth.provider || Translator.getProviderName(),
   });
 });
 
