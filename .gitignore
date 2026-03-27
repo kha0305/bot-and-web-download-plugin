@@ -1,0 +1,6 @@
+node_modules
+.env
+data/files/*
+!data/files/.gitkeep
+*.zip
+data/logs/*.txt

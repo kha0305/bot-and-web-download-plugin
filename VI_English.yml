@@ -1,0 +1,296 @@
+lang:
+  prefix: '&f&lPLAYER&3&lWARPS&7 &8⏵'
+  unknown-command: '%prefix% &cLệnh không xác định, sử dụng /pwarp help'
+  insufficient-permissions: '%prefix% &7Bạn cần %permission% cho hành động này!'
+  bad-command-syntax: '%prefix% &cCú pháp lệnh đúng: &4%syntax%'
+  help-message-lore:
+  - '&7-----------------< &f&lPLAYER&3&lWARPS&7 >------------------'
+  - '&b/pwarp &8- &7mở menu chính với tất cả warps được liệt kê'
+  - '&b/pwarp <warp> &8- &7 dịch chuyển đến warp được chỉ định'
+  - '&b/pwarp create <warp> &8- &7tạo một warp với tên đã nêu'
+  - '&b/pwarp remove <warp> &8- &7xóa warp được chỉ định'
+  - '&b/pwarp manage <warp> &8- &7mở menu cài đặt'
+  - '&b/pwarp reload &8- &7tải lại các tập tin của plugin'
+  - '&7-----------------------------------------------------'
+  reload-message: '%prefix% &7Plugin đã được tải lại thành công!'
+  limit-reached: '%prefix% &7Bạn đã đạt đến giới hạn warps &7(%limit%) được tạo'
+  limit-reached-other: '%prefix% &7Người chơi %player% không thể sở hữu thêm warps!'
+  
+  warp-visit-notification: '%prefix% &f%player%&7 đã ghé thăm warp &f%warp%'
+  warp-creation-notification: '%prefix% &f%player%&7 đã tạo một warp &f%warp%'
+  
+  insufficient-perms-for-category: '&4Danh mục bị khóa'
+  insufficient-perms-for-category-lore:
+  - '&cBạn cần có %permission%'
+  - '&cCó thể xem danh mục này'
+  
+  no-warp-found: '&cKhông tìm thấy warp'
+  warp-in-deleted-world: '&cWarp đang bị xóa/inactive world'
+  no-warp-at-position: '&cKhông warp'
+  
+  alphabetical: theo bảng chữ cái
+  latest: Mới nhất
+  visits: lượt truy cập
+  rating: Đánh giá
+  
+  opened-status: '&aOPENED'
+  closed-status: '&cCLOSED'
+  password-protected-status: '&eMật khẩu được bảo vệ'
+  
+  invalid-input: '%prefix% &cĐầu vào không hợp lệ!'
+  wait-before-next-action: '%prefix% &cĐợi một chút trước khi lặp lại hành động!'
+  password-too-short: '%prefix% &cMật khẩu phải dài ít nhất 3 ký tự!'
+  non-existing-warp: '%prefix% &cwarp này không tồn tại!'
+  warp-already-created: '%prefix% &cMột warp với tên này đã tồn tại!'
+  warp-created: '%prefix% &7Bạn đã tạo warp %name%, nhấp vào &l&nHERE&7 để cấu hình.'
+  warp-submitted-for-approval: '%prefix% &7Warp đã được gửi để phê duyệt'
+  warp-approved: '%prefix% &7Warp %warp% đã được phê duyệt!'
+  warp-denied: '%prefix% &7Warp đã bị từ chối phê duyệt, hãy di chuột để biết thêm thông tin'
+  # Tin nhắn này sẽ được gửi khi cài đặt Vault
+  warp-created-with-price: '%prefix% &7Bạn đã tạo một warp &e%name% &c(- $%price%)&7,
+    click &l&nHERE&7 để định cấu hình nó.'
+  tried-to-create-warp-in-disabled-world: '%prefix% &cWarp không thể được tạo trong
+    world (%world%)'
+  tried-to-create-warp-in-foreign-residence: '%prefix% &cKhông thể tạo warp trong
+    unowned nơi cư trú'
+  tried-to-create-warp-in-foreign-claim: '%prefix% &cKhông thể tạo warp trong một địa chỉ chưa được sở hữu
+    claim'
+  tried-to-create-warp-in-foreign-region: '%prefix% &cKhông thể tạo warp trong một vùng
+    named %region%'
+  tried-to-create-warp-in-foreign-island: '%prefix% &cKhông thể tạo warp trên một thiết bị chưa được sở hữu
+    island'
+  tried-to-create-warp-in-foreign-land: '%prefix% &cKhông thể tạo warp ở trạng thái chưa sở hữu
+    land'
+  tried-to-relocate-warp-to-disabled-world: '%prefix% &cWarp không thể chuyển sang đây
+    world (%world%)'
+  insufficient-balance-for-action: '%prefix% &cKhông đủ số dư để làm điều này! ($%price%)'
+  insufficient-balance-to-teleport: '%prefix% &cKhông đủ số dư (%price% $) để dịch chuyển tức thời
+    to %warp% warp'
+  warp-removed: '%prefix% &7Bạn đã xóa warp này'
+  # Tin nhắn này sẽ được gửi khi cài đặt Vault
+  warp-removed-with-refund: '%prefix% &7Bạn đã xóa warp &a này(+ $%refund%)'
+  try-to-remove-not-owning-warp: '%prefix% &cBạn không thể xóa warps của người khác'
+  click-to-configure: '&7Click để định cấu hình warp'
+  click-to-cancel-input: '&7Click để thoát khỏi chế độ nhập liệu'
+  teleportation: '%prefix% &7Dịch chuyển tức thời trong &e%time% giây!'
+  teleportation-cancelled: '%prefix% &cDịch chuyển đã bị hủy!'
+  teleport-to-warp: '%prefix% &7Được dịch chuyển tới warp %warp% bởi %player%'
+  teleport-to-warp-with-admission: '%prefix% &7Dịch chuyển tới warp của người chơi
+    %player% &c(- $%price%)'
+  accept-teleport-with-admission: Dịch chuyển tức thời? &c(-%price% $)
+  teleport-between-worlds-error: '%prefix% &7Dịch chuyển tức thời đã bị hủy. Bạn chỉ có thể
+    teleport tới warps trong thế giới của bạn!'
+  warp-access-blocked: '%prefix% &cBạn đã bị chặn truy cập %warp% này
+    warp!'
+  name-cant-contain-space: '%prefix% &7Name không thể chứa khoảng trắng'
+  enter-password: Nhập mật khẩu
+  enter-warps-name: Nhập tên Warps
+  password-setting-cancelled: '%prefix% &7Cài đặt mật khẩu đã bị hủy.'
+  password-changed: '%prefix% &7Mật khẩu đã được thay đổi!'
+  password-length: '%prefix% &cMật khẩu phải chứa ít nhất 3 ký tự!'
+  entered-wrong-password: '%prefix% &7Nhập sai mật khẩu!'
+  categories-are-disabled: '&cDanh mục đang bị vô hiệu hóa!'
+  item-changed: '%prefix% &7Đã thay đổi vật phẩm menu thành %item%'
+  item-from-hand: '&5[Đặt vật phẩm từ Tay]'
+  title-write-msg: '%prefix% &7Bây giờ hãy viết văn bản của bạn bên dưới %warp% warp của bạn trong warp
+    list:'
+  item-write-msg: '%prefix% &7Nhập tên vật phẩm (hoặc gõ &lhand&7 để chèn vật phẩm bạn đang cầm) sẽ đại diện cho %warp% warp:'
+  write-new-display-name: '%prefix% &7Bây giờ hãy viết tên hiển thị mới của warp này:'
+  cancel-input: '&c [Click để hủy]'
+  input-cancelled: '%prefix% &7Bạn đã rời khỏi chế độ nhập.'
+  text-size-error: '%prefix% &7Văn bản phải có từ 5 đến 32 ký tự'
+  description-changed: '%prefix% &7Bạn đã thay đổi mô tả warp %warp% của mình'
+  not-owning: '%prefix% &7Đây không phải là warp của bạn'
+  already-owning: '%prefix% &7Bạn đã sở hữu warp này!'
+  invalid-item: '%prefix% &7Vật phẩm này không tồn tại'
+  already-reviewed: '%prefix% &7Bạn đã xem lại warp này!'
+  invalid-review: '%prefix% &7Bạn phải chọn từ 1 - 5 sao'
+  self-review: '%prefix% &7Bạn không thể xem lại warp của riêng mình!'
+  review-warp-title: Đánh giá %warp% warp
+  warp-reviewed: '%prefix% &7Bạn đã đánh giá warp (%warp%) này với số sao %stars%'
+  tried-to-set-banned-item: '%prefix% &7Vật phẩm này không được phép'
+  not-a-number: '%prefix% &7Giá đã nhập không phải là số'
+  price-write-msg: '%prefix% &7Bây giờ vui lòng viết giá dịch chuyển của %warp%:'
+  price-changed: '%prefix% &7Giá dịch chuyển tới warp %warp% của bạn đã được đổi thành %price%'
+  invalid-entered-price: '%prefix% &7Giá không được âm'
+  entered-higher-price-than-allowed: '%prefix% &7Giá không thể cao hơn %max%
+    $'
+  ownership-transfer-successful: '%prefix% &7Bạn đã chuyển quyền sở hữu warp này cho người chơi %player%'
+  ownership-transfer-info: '%prefix% &7Người chơi %player% đã chuyển quyền sở hữu warp %warp% cho bạn'
+  unavailable-player: '%prefix% &7Người chơi không khả dụng!'
+  owner-change-msg: '%prefix% &7Bây giờ hãy viết tên chủ sở hữu mới của %warp% warp:'
+  password-change-msg: '%prefix% &7Bây giờ hãy ghi mật khẩu mới của %warp% warp:'
+  warp-name-changed: '%prefix% &7Đã đổi tên thành công warp %oldName% thành %newName%'
+  warp-status-changed: '%prefix% &7Trạng thái warp đã được đổi thành: &e%status%'
+  warp-relocated: '%prefix% &7Warp %warp% đã được di dời!'
+  rename-write-msg: '%prefix% &7Bây giờ hãy nhập tên mới cho warp %warp%:'
+  set-description-msg: '%prefix% &7Bây giờ hãy viết mô tả của %warp% mới:'
+  dangerous-position-msg: '%prefix% &7Vị trí của warp không an toàn, đã hủy dịch chuyển'
+  warp-name-is-above-letters-limit: '%prefix% &7Tên của warp phải ngắn hơn
+    %limit% letters'
+  warps-item-name: 'Tổng quan về &e&lWarps'
+  my-warps-item-name: '&e&lQuản lý warps của tôi'
+  own-warp-item-name: '&fWarp: &a%warp%'
+  help-item-name: '&e&lCách tạo warp'
+  favorite-warps-item-name: '&e&lĐã lưu Warps'
+  my-warp-title: Warp của tôi &7Trang %page%
+  warps-title: Danh sách Warp &7Trang %page%
+  change-warp-category-title: 'Thay đổi danh mục của %warp%:'
+  edit-warp-menu-title: Chỉnh sửa warp %warp%
+  category-title: Thể loại
+  help-title: Giúp đỡ
+  set-warp-status-title: 'Đặt trạng thái của warp:'
+  favorites-title: Đã lưu Warps &7%page%. trang
+  confirmation-menu-title: Xác nhận hành động? (%warp%)
+  accept: '&a&lChấp nhận'
+  accept-with-price: '&a&lAChấp nhận &c(-%price% $)'
+  deny: '&c&lTừ chối'
+  sort-warps: '&aSắp xếp Warps'
+  click-to-sort-by: '&b ► Bấm để sắp xếp theo %selector%'
+  next-page: '&aTrang tiếp theo'
+  previous-page: '&cTrang trước'
+  no-description: '&3&oOwner chưa đặt mô tả'
+  back-name: '&c&lTrở lại'
+  one-stars: '&e&l1 sao'
+  two-stars: '&e&l2 sao'
+  three-stars: '&e&l3 sao'
+  four-stars: '&e&l4 sao'
+  five-stars: '&e&l5 sao'
+  warp-enabled: '%prefix% &7Bạn đã &abật&f warp %warp% của mình'
+  warp-disabled: '%prefix% &7Bạn đã &ctắt&f warp %warp% của mình'
+  warp-is-disabled: '%prefix% &7Chủ sở hữu đã tạm thời vô hiệu hóa warp &7(%warp%) này'
+  entered-invalid-type-of-warp: '%prefix% &7Đã nhập loại sai. Các loại có sẵn: &9%types%'
+  cant-block-yourself: '%prefix% &cBạn không thể tự chặn mình!'
+  warp-type-changed: '%prefix% &7Bạn đã thay đổi loại &7%warp% warp thành &7%type%'
+  privacy-changed: '%prefix% &7Bạn đã thay đổi quyền riêng tư của %warp% warp'
+  display-name-changed: '%prefix% &7Tên hiển thị của warp %warp% đã được đổi thành
+    %displayName%'
+  favorite-warp-added: '%prefix% &7Warp %warp% đã được thêm vào danh sách yêu thích của bạn'
+  remove-favorite-warp: '%prefix% &7Bạn đã xóa warp %warp% khỏi danh sách yêu thích'
+  warp-not-contains-favlist: '%prefix% &7Warp %warp% không có trong danh sách yêu thích của bạn'
+  warp-already-contains-favlist: '%prefix% &7Warp %warp% đã có trong danh sách yêu thích của bạn'
+  search-warp: '&aTìm kiếm Warp'
+  search-warp-lore:
+  - '&7Click để tìm kiếm warp'
+  - '&7theo tên'
+  # Truyền thuyết bên trong /pwarp GUI
+  # Trình giữ chỗ có thể có:
+  #   %owner-name% - tên của người chơi sở hữu pwarp này
+  #   %visits% - số lượt truy cập mọi lúc
+  #   %today% - tham dự trong 1 ngày
+  #   %stars% - rút thăm các ngôi sao theo đánh giá (★☆☆☆☆ - ★★★★★)
+  #   %voters% - có bao nhiêu người chơi bình chọn
+  #   %ratings% - xếp hạng theo số (1 - 5)
+  #   %lore% - truyền thuyết về pwarp của người chơi
+  #   %status% - hiển thị trạng thái của pwarp
+  #   %creationDate% - khi pwarp được tạo
+  #   %world% - nơi đặt pwarp
+  warp-lore:
+  - ' '
+  - '&7Chủ sở hữu: &f%owner-name%'
+  - '&7Đã tạo: &f%creationDate%'
+  - '&7Thế giới: &f%world%'
+  - '&7Lượt truy cập: &f%visits% &8(%today% hôm nay)'
+  - '&7Xếp hạng: &e%stars% &6%ratings% &8(%voters% cử tri)'
+  - '&7Trạng thái: %status%'
+  - '&7Giá: &6%price%'
+  - '&7Mô tả:'
+  - '&8 &9%lore%'
+  - ' '
+  - '&e ► Nhấp chuột trái để dịch chuyển'
+  - '&e ► SHIFT + Nhấp chuột trái để giải nén/save'
+  - '&e ► Nhấp chuột phải để xem lại'
+  own-warp-lore:
+  - ' '
+  - '&7Lượt truy cập: &f%visits% &8(%today% hôm nay)'
+  - '&7Đã tạo: &f%creationDate%'
+  - '&7Xếp hạng: &e%stars% &6%ratings% &8(%voters% cử tri)'
+  - '&7Có sẵn: %status%'
+  - '&7Giá: &6%price%'
+  - '&7Mô tả:'
+  - '&8 &9%lore%'
+  - ' '
+  - '&e ► Nhấp chuột trái để dịch chuyển'
+  - '&e ► Nhấp chuột phải để chỉnh sửa'
+  # Điều này sẽ được sử dụng nếu giá dịch chuyển là 0
+  free-of-charge: '&fMiễn phí'
+  warp-active: '&a ✔ Đang hoạt động'
+  warp-inactive: '&c❌ Không hoạt động'
+  help-display-name: '&b&lHint'
+  help-lore:
+  - ' '
+  - '&7 Để tạo warp, hãy sử dụng'
+  - 'Lệnh &7:'
+  - ' '
+  - '&2 ● &a/pwarp create ◁tên▷'
+  - ' '
+  - '&7 thì bạn có thể thiết lập'
+  - '&7 warp của bạn bằng cách:'
+  - ' '
+  - '&6 ● &e/pwarp setup ◁tên▷'
+  - ' '
+  #
+  # Trình đơn cài đặt
+  #
+  change-display-name: '&aThay đổi tên hiển thị'
+  change-display-name-lore:
+  - '&8&lLƯU Ý:&8 Bạn có thể sử dụng mã màu (&)'
+  - ' '
+  - '&e ► Bấm để đổi tên hiển thị'
+  remove-warp: '&cXóa warp'
+  remove-warp-lore:
+  - ' '
+  - '&e ► Bấm để xóa'
+  change-type: '&aThay đổi loại warp'
+  change-type-lore:
+  - ' '
+  - '&e ► Bấm để thay đổi'
+  change-item: '&aThay đổi vật phẩm của warp'
+  change-item-lore:
+  - ' '
+  - '&e ► Bấm để thay đổi'
+  change-label: '&aThay đổi mô tả của warp'
+  change-label-lore:
+  - ' '
+  - '&e ► Bấm để thay đổi'
+  pwarp-accessibility: 'Khả năng tiếp cận &aWarp'
+  pwarp-accessibility-lore:
+  - ' '
+  - '&7Trạng thái thực tế: &2%status%'
+  - ' '
+  - '&e ► Thay đổi tính khả dụng của warp'
+  blocked-player-input: '%prefix% &7Bây giờ hãy nhập tên người chơi mà bạn muốn chặn khỏi warp này:'
+  blocked-players-title: Người chơi bị chặn
+  blocked-players: '&aNgười chơi bị chặn &2(%amount%)'
+  blocked-players-lore:
+  - ' '
+  - '&7Người chơi đã chặn'
+  - '&7truy cập vào warp này'
+  - ' '
+  - '&e ► Bấm để quản lý'
+  blocked-player-manage: '&c%player%'
+  blocked-player-manage-lore:
+  - ' '
+  - '&e ► Nhấp để bỏ chặn'
+  blocked-player-add: '&eThêm người chơi'
+  set-price: '&aGiá dịch chuyển'
+  set-price-lore:
+  - ' '
+  - '&7Bạn có thể thiết lập giá cho'
+  - '&7ghé thăm warp của bạn'
+  - ' '
+  - '&e ► Click để đặt giá'
+  change-owner: '&eĐổi chủ sở hữu'
+  change-owner-lore:
+  - ' '
+  - '&e ► Bấm để đổi chủ'
+  rename-warp: '&eĐổi tên warp'
+  rename-warp-lore:
+  - ' '
+  - '&e ► Bấm để đổi tên'
+  warp-relocation: '&eĐịnh vị lại warp của bạn'
+  warp-relocation-lore:
+  - '&7Bằng cách nhấp vào thay đổi'
+  - '&7vị trí của warp'
+  - ' '
+  - '&e ► Bấm để di chuyển'

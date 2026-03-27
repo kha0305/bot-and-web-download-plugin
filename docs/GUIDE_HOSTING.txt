@@ -1,0 +1,30 @@
+HƯỚNG DẪN CÀI ĐẶT BOT LÊN HOST
+====================================
+
+Bước 1: Chuẩn bị
+- Bạn sẽ thấy 1 file nén tên là 'bot-deploy.zip' trong thư mục này.
+- File này ĐÃ LOẠI BỎ thư mục 'node_modules' để nhẹ và chuẩn quy trình hosting.
+
+Bước 2: Upload lên Host
+[Cách 1: Hosting dùng Panel (Pterodactyl, cPanel...)]
+1. Vào mục 'Files' -> Upload 'bot-deploy.zip'.
+2. Chuột phải -> Unarchive / Extract (Giải nén).
+3. Vào mục 'Startup' (Khởi động).
+   - Tìm biến **MAIN FILE** (hoặc Startup File): điền `index.js`.
+   - Nếu không có biến, tìm chỗ nhập lệnh chạy: `node index.js`.
+4. Khởi động server (Start). Hệ thống sẽ tự cài thư viện.
+
+[Cách 2: VPS Linux/Windows]
+1. Upload file zip và giải nén.
+2. Mở terminal tại thư mục bot.
+3. Gõ lệnh: npm install (để cài lại thư viện).
+4. Gõ lệnh: npm start (để chạy bot).
+   *Gợi ý: Dùng pm2 để treo 24/7 (pm2 start index.js).
+
+Bước 3: Lưu ý quan trọng
+- File .env ĐÃ ĐƯỢC KÈM THEO trong file zip (chứa token, admin ID của bạn).
+- Nếu host reset hoặc đổi IP, hãy kiểm tra lại file .env trên host.
+
+Bước 4: Cập nhật Bot (Update)
+- Khi bạn muốn cập nhật code mới, hãy upload đè các file .js.
+- QUAN TRỌNG: KHÔNG upload đè file `data/plugins.json` để tránh mất dữ liệu cũ đang có trên host.

@@ -1,0 +1,9 @@
+{
+  "enabled": true,
+  "allowedChannels": [],
+  "minQueryLength": 3,
+  "maxResults": 5,
+  "cooldown": 5000,
+  "autoDelete": true,
+  "autoDeleteDelay": 30000
+}

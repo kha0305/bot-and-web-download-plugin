@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plugin Dashboard - Đăng nhập</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-box">
+      <div class="login-logo">
+        <h1>Plugin Dashboard</h1>
+        <p>Quản lý kho plugin Minecraft</p>
+      </div>
+      
+      <div id="loginError" class="login-error"></div>
+      
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="discordId">Discord ID</label>
+          <input 
+            type="text" 
+            id="discordId" 
+            class="form-input" 
+            placeholder="Nhập Discord ID của bạn"
+            autocomplete="off"
+            required
+          >
+        </div>
+        
+        <button type="submit" class="btn btn-primary" id="loginBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+            <polyline points="10 17 15 12 10 7"/>
+            <line x1="15" y1="12" x2="3" y2="12"/>
+          </svg>
+          Đăng nhập
+        </button>
+      </form>
+      
+      <div class="mt-3 text-center">
+        <p class="text-muted" style="font-size: 12px;">
+          Chỉ Admin mới có quyền truy cập Dashboard
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Check if already logged in
+    fetch('/api/auth/status')
+      .then(res => res.json())
+      .then(data => {
+        if (data.authenticated) {
+          window.location.href = '/home';
+        }
+      });
+
+    // Login form handler
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const discordId = document.getElementById('discordId').value.trim();
+      const loginBtn = document.getElementById('loginBtn');
+      const errorDiv = document.getElementById('loginError');
+      
+      if (!discordId) {
+        errorDiv.textContent = 'Vui lòng nhập Discord ID';
+        errorDiv.classList.add('show');
+        return;
+      }
+      
+      // Validate Discord ID format (17-19 digits)
+      if (!/^\d{17,19}$/.test(discordId)) {
+        errorDiv.textContent = 'Discord ID không hợp lệ (phải là 17-19 chữ số)';
+        errorDiv.classList.add('show');
+        return;
+      }
+      
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = '<div class="loading-spinner"></div> Đang xử lý...';
+      errorDiv.classList.remove('show');
+      
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ discordId })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          window.location.href = '/home';
+        } else {
+          errorDiv.textContent = data.error || 'Đăng nhập thất bại';
+          errorDiv.classList.add('show');
+          loginBtn.disabled = false;
+          loginBtn.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+              <polyline points="10 17 15 12 10 7"/>
+              <line x1="15" y1="12" x2="3" y2="12"/>
+            </svg>
+            Đăng nhập
+          `;
+        }
+      } catch (error) {
+        errorDiv.textContent = 'Lỗi kết nối đến server';
+        errorDiv.classList.add('show');
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = `
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+            <polyline points="10 17 15 12 10 7"/>
+            <line x1="15" y1="12" x2="3" y2="12"/>
+          </svg>
+          Đăng nhập
+        `;
+      }
+    });
+  </script>
+</body>
+</html>

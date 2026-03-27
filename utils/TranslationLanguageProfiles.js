@@ -1,0 +1,141 @@
+const DEFAULT_TARGET_LANGUAGE = "vi";
+
+const TRANSLATION_LANGUAGES = Object.freeze({
+  vi: {
+    id: "vi",
+    name: "Vietnamese",
+    nativeName: "Tiếng Việt",
+    promptName: "Vietnamese",
+    googleCode: "vi",
+  },
+  en: {
+    id: "en",
+    name: "English",
+    nativeName: "English",
+    promptName: "English",
+    googleCode: "en",
+  },
+  es: {
+    id: "es",
+    name: "Spanish",
+    nativeName: "Español",
+    promptName: "Spanish",
+    googleCode: "es",
+  },
+  fr: {
+    id: "fr",
+    name: "French",
+    nativeName: "Français",
+    promptName: "French",
+    googleCode: "fr",
+  },
+  de: {
+    id: "de",
+    name: "German",
+    nativeName: "Deutsch",
+    promptName: "German",
+    googleCode: "de",
+  },
+  it: {
+    id: "it",
+    name: "Italian",
+    nativeName: "Italiano",
+    promptName: "Italian",
+    googleCode: "it",
+  },
+  "pt-BR": {
+    id: "pt-BR",
+    name: "Portuguese (Brazil)",
+    nativeName: "Português (Brasil)",
+    promptName: "Brazilian Portuguese",
+    googleCode: "pt",
+  },
+  ru: {
+    id: "ru",
+    name: "Russian",
+    nativeName: "Русский",
+    promptName: "Russian",
+    googleCode: "ru",
+  },
+  ja: {
+    id: "ja",
+    name: "Japanese",
+    nativeName: "日本語",
+    promptName: "Japanese",
+    googleCode: "ja",
+  },
+  ko: {
+    id: "ko",
+    name: "Korean",
+    nativeName: "한국어",
+    promptName: "Korean",
+    googleCode: "ko",
+  },
+  zh: {
+    id: "zh",
+    name: "Chinese (Simplified)",
+    nativeName: "简体中文",
+    promptName: "Simplified Chinese",
+    googleCode: "zh-cn",
+  },
+  th: {
+    id: "th",
+    name: "Thai",
+    nativeName: "ไทย",
+    promptName: "Thai",
+    googleCode: "th",
+  },
+  id: {
+    id: "id",
+    name: "Indonesian",
+    nativeName: "Bahasa Indonesia",
+    promptName: "Indonesian",
+    googleCode: "id",
+  },
+  tr: {
+    id: "tr",
+    name: "Turkish",
+    nativeName: "Türkçe",
+    promptName: "Turkish",
+    googleCode: "tr",
+  },
+  pl: {
+    id: "pl",
+    name: "Polish",
+    nativeName: "Polski",
+    promptName: "Polish",
+    googleCode: "pl",
+  },
+  uk: {
+    id: "uk",
+    name: "Ukrainian",
+    nativeName: "Українська",
+    promptName: "Ukrainian",
+    googleCode: "uk",
+  },
+  ar: {
+    id: "ar",
+    name: "Arabic",
+    nativeName: "العربية",
+    promptName: "Arabic",
+    googleCode: "ar",
+  },
+});
+
+const TRANSLATION_LANGUAGE_ALIASES = Object.freeze({
+  "vi-vn": "vi",
+  "vn": "vi",
+  "en-us": "en",
+  "en-gb": "en",
+  "pt-br": "pt-BR",
+  "pt_br": "pt-BR",
+  "zh-cn": "zh",
+  "zh_cn": "zh",
+  "zh-hans": "zh",
+});
+
+module.exports = {
+  DEFAULT_TARGET_LANGUAGE,
+  TRANSLATION_LANGUAGES,
+  TRANSLATION_LANGUAGE_ALIASES,
+};

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trang chủ - Plugin Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <h2>Plugin Dashboard</h2>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <a href="/home" class="nav-item active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          Trang chủ
+        </a>
+        <a href="/storage" class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          </svg>
+          Kho lưu trữ
+        </a>
+        <a href="/statistics" class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"/>
+            <line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          Thống kê
+        </a>
+        <a href="/guide" class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+          Hướng dẫn
+        </a>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">A</div>
+          <div>
+            <div class="user-name">Admin</div>
+            <div class="user-role">Quản trị viên</div>
+          </div>
+        </div>
+        <button class="btn btn-secondary btn-sm" style="width: 100%;" onclick="logout()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Đăng xuất
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="page-header">
+        <h1 class="page-title">Tổng quan</h1>
+        <div class="page-actions">
+          <button class="btn btn-secondary btn-sm" onclick="loadStats()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"/>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+            </svg>
+            Làm mới
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+            </svg>
+          </div>
+          <div class="stat-value" id="totalPlugins">--</div>
+          <div class="stat-label">Tổng số plugin</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon purple">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+          </div>
+          <div class="stat-value" id="totalDownloads">--</div>
+          <div class="stat-label">Tổng lượt tải</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="stat-value" id="totalUsers">--</div>
+          <div class="stat-label">Người dùng</div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon orange">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div class="stat-value" id="todayDownloads">--</div>
+          <div class="stat-label">Tải hôm nay</div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="charts-grid">
+        <!-- Downloads Chart -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Lượt tải theo thời gian</h3>
+              <p class="card-subtitle">Thống kê chi tiết lượt download</p>
+            </div>
+            <div class="period-filter">
+              <button class="period-btn" data-period="day">1 Ngày</button>
+              <button class="period-btn active" data-period="week">1 Tuần</button>
+              <button class="period-btn" data-period="month">1 Tháng</button>
+              <button class="period-btn" data-period="year">1 Năm</button>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="downloadsChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Categories Chart -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h3 class="card-title">Phân bố danh mục</h3>
+              <p class="card-subtitle">Số lượng plugin theo loại</p>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="categoriesChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Plugins -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <h3 class="card-title">Top plugin được tải nhiều nhất</h3>
+            <p class="card-subtitle">Xếp hạng theo lượt download</p>
+          </div>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Tên plugin</th>
+                <th>Lượt tải</th>
+                <th>Biểu đồ</th>
+              </tr>
+            </thead>
+            <tbody id="topPluginsTable">
+              <tr>
+                <td colspan="4" class="text-center text-muted">Đang tải dữ liệu...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    let downloadsChart = null;
+    let categoriesChart = null;
+    let currentPeriod = 'week';
+
+    // Check auth
+    async function checkAuth() {
+      const res = await fetch('/api/auth/status');
+      const data = await res.json();
+      if (!data.authenticated) {
+        window.location.href = '/';
+      }
+    }
+
+    // Logout
+    async function logout() {
+      await fetch('/api/logout', { method: 'POST' });
+      window.location.href = '/';
+    }
+
+    // Toast notification
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      const icons = {
+        success: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>',
+        error: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+        warning: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+      };
+      
+      toast.innerHTML = `
+        ${icons[type]}
+        <span class="toast-message">${message}</span>
+      `;
+      
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // Load stats
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/stats/overview');
+        const data = await res.json();
+        
+        document.getElementById('totalPlugins').textContent = data.totalPlugins.toLocaleString();
+        document.getElementById('totalDownloads').textContent = data.totalDownloads.toLocaleString();
+        document.getElementById('totalUsers').textContent = data.totalUsers.toLocaleString();
+        document.getElementById('todayDownloads').textContent = data.todayDownloads.toLocaleString();
+      } catch (e) {
+        console.error('Load stats error:', e);
+      }
+    }
+
+    // Load chart data
+    async function loadChartData(period) {
+      try {
+        const res = await fetch(`/api/stats/chart?period=${period}`);
+        const data = await res.json();
+        
+        const labels = Object.keys(data);
+        const values = Object.values(data);
+        
+        if (downloadsChart) {
+          downloadsChart.data.labels = labels;
+          downloadsChart.data.datasets[0].data = values;
+          downloadsChart.update();
+        } else {
+          const ctx = document.getElementById('downloadsChart').getContext('2d');
+          downloadsChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels,
+              datasets: [{
+                label: 'Lượt tải',
+                data: values,
+                borderColor: '#00d4ff',
+                backgroundColor: 'rgba(0, 212, 255, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#00d4ff',
+                pointBorderColor: '#00d4ff',
+                pointRadius: 4,
+                pointHoverRadius: 6
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  display: false
+                }
+              },
+              scales: {
+                x: {
+                  grid: {
+                    color: 'rgba(255, 255, 255, 0.05)'
+                  },
+                  ticks: {
+                    color: '#a0a0b0'
+                  }
+                },
+                y: {
+                  beginAtZero: true,
+                  grid: {
+                    color: 'rgba(255, 255, 255, 0.05)'
+                  },
+                  ticks: {
+                    color: '#a0a0b0'
+                  }
+                }
+              }
+            }
+          });
+        }
+      } catch (e) {
+        console.error('Load chart error:', e);
+      }
+    }
+
+    // Load categories
+    async function loadCategories() {
+      try {
+        const res = await fetch('/api/stats/categories');
+        const data = await res.json();
+        
+        const labels = Object.keys(data).slice(0, 10);
+        const values = Object.values(data).slice(0, 10);
+        
+        const colors = [
+          '#00d4ff', '#7b2cbf', '#00e676', '#ffab00', '#ff5252',
+          '#536dfe', '#00bcd4', '#4caf50', '#ff9800', '#f44336'
+        ];
+        
+        if (categoriesChart) {
+          categoriesChart.data.labels = labels;
+          categoriesChart.data.datasets[0].data = values;
+          categoriesChart.update();
+        } else {
+          const ctx = document.getElementById('categoriesChart').getContext('2d');
+          categoriesChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+              labels,
+              datasets: [{
+                data: values,
+                backgroundColor: colors,
+                borderColor: '#1a1a25',
+                borderWidth: 2
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'right',
+                  labels: {
+                    color: '#a0a0b0',
+                    font: {
+                      size: 11
+                    },
+                    padding: 12
+                  }
+                }
+              }
+            }
+          });
+        }
+      } catch (e) {
+        console.error('Load categories error:', e);
+      }
+    }
+
+    // Load top plugins
+    async function loadTopPlugins() {
+      try {
+        const res = await fetch(`/api/stats/top-plugins?period=${currentPeriod}&limit=10`);
+        const data = await res.json();
+        
+        const tbody = document.getElementById('topPluginsTable');
+        
+        if (data.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">Chưa có dữ liệu</td></tr>';
+          return;
+        }
+        
+        const maxCount = Math.max(...data.map(p => p.count));
+        
+        tbody.innerHTML = data.map((plugin, index) => {
+          const percent = (plugin.count / maxCount) * 100;
+          return `
+            <tr>
+              <td class="mono">${index + 1}</td>
+              <td><strong>${plugin.name}</strong></td>
+              <td class="mono">${plugin.count.toLocaleString()}</td>
+              <td style="width: 200px;">
+                <div style="background: var(--bg-secondary); border-radius: 4px; overflow: hidden;">
+                  <div style="width: ${percent}%; height: 8px; background: var(--accent-gradient);"></div>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (e) {
+        console.error('Load top plugins error:', e);
+      }
+    }
+
+    // Period filter handlers
+    document.querySelectorAll('.period-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentPeriod = btn.dataset.period;
+        loadChartData(currentPeriod);
+        loadTopPlugins();
+      });
+    });
+
+    // Init
+    checkAuth();
+    loadStats();
+    loadChartData('week');
+    loadCategories();
+    loadTopPlugins();
+
+    // Auto refresh every 30 seconds
+    setInterval(() => {
+      loadStats();
+    }, 30000);
+  </script>
+</body>
+</html>

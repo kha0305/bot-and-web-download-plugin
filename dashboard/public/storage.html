@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kho lưu trữ - Plugin Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <h2>Plugin Dashboard</h2>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <a href="/home" class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          Trang chủ
+        </a>
+        <a href="/storage" class="nav-item active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          </svg>
+          Kho lưu trữ
+        </a>
+        <a href="/statistics" class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"/>
+            <line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          Thống kê
+        </a>
+        <a href="/guide" class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          </svg>
+          Hướng dẫn
+        </a>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar">A</div>
+          <div>
+            <div class="user-name">Admin</div>
+            <div class="user-role">Quản trị viên</div>
+          </div>
+        </div>
+        <button class="btn btn-secondary btn-sm" style="width: 100%;" onclick="logout()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+          Đăng xuất
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="page-header">
+        <h1 class="page-title">Kho lưu trữ</h1>
+        <div class="page-actions">
+          <button class="btn btn-secondary btn-sm" onclick="showCreateFolderModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+              <line x1="12" y1="11" x2="12" y2="17"/>
+              <line x1="9" y1="14" x2="15" y2="14"/>
+            </svg>
+            Tạo thư mục
+          </button>
+          <button class="btn btn-primary btn-sm" onclick="document.getElementById('fileInput').click()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            Tải lên
+          </button>
+          <input type="file" id="fileInput" multiple accept=".jar,.zip,.yml,.yaml,.ym,.txt,.md,.json,.properties,.conf,.lang,.toml,.ini" style="display: none;" onchange="handleFileSelect(event)">
+        </div>
+      </div>
+
+      <!-- Storage Layout -->
+      <div class="storage-layout">
+        <!-- Folder List -->
+        <div class="folder-list">
+          <div class="folder-header">
+            <h3 style="font-size: 14px; font-weight: 600;">Danh mục</h3>
+            <button class="btn btn-icon btn-secondary" onclick="loadFolders()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="23 4 23 10 17 10"/>
+                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+              </svg>
+            </button>
+          </div>
+          <div id="folderList">
+            <div class="text-center text-muted" style="padding: 20px; font-size: 13px;">
+              Đang tải...
+            </div>
+          </div>
+        </div>
+
+        <!-- Files Area -->
+        <div>
+          <!-- Upload Zone -->
+          <div 
+            class="upload-zone mb-3" 
+            id="uploadZone"
+            ondragover="handleDragOver(event)"
+            ondragleave="handleDragLeave(event)"
+            ondrop="handleDrop(event)"
+          >
+            <div class="upload-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+            </div>
+            <h3 class="upload-title">Kéo thả file vào đây</h3>
+            <p class="upload-subtitle">hoặc click để chọn file (.jar, .zip, .yml, .txt, .md, ...)</p>
+          </div>
+
+          <!-- Current Path -->
+          <div class="flex items-center gap-1 mb-2">
+            <span class="text-muted" style="font-size: 13px;">Vị trí:</span>
+            <span id="currentPath" class="mono" style="font-size: 13px; color: var(--accent-primary);">/ (Tất cả)</span>
+          </div>
+
+          <!-- Selected Actions -->
+          <div id="selectedActions" class="hidden card mb-2" style="padding: 12px 16px;">
+            <div class="flex items-center justify-between">
+              <span id="selectedCount" style="font-size: 14px;">0 file đã chọn</span>
+              <div class="flex gap-1">
+                <button class="btn btn-secondary btn-sm" onclick="moveSelected()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                    <polyline points="10 17 15 12 10 7"/>
+                    <line x1="15" y1="12" x2="3" y2="12"/>
+                  </svg>
+                  Di chuyển
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="deleteSelected()">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                  </svg>
+                  Xóa
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="clearSelection()">Hủy chọn</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sort Options -->
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-muted" style="font-size: 13px;">Sắp xếp:</span>
+              <div class="sort-options">
+                <button class="sort-btn active" data-sort="name" data-order="asc" onclick="setSort('name')">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 6h16M4 12h10M4 18h6"/>
+                  </svg>
+                  Tên
+                  <span class="sort-arrow" id="arrow-name"></span>
+                </button>
+                <button class="sort-btn" data-sort="size" data-order="asc" onclick="setSort('size')">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                  Dung lượng
+                  <span class="sort-arrow" id="arrow-size"></span>
+                </button>
+                <button class="sort-btn" data-sort="modified" data-order="desc" onclick="setSort('modified')">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  Thời gian
+                  <span class="sort-arrow" id="arrow-modified"></span>
+                </button>
+              </div>
+            </div>
+            <span class="text-muted" style="font-size: 13px;" id="fileCount">0 file</span>
+          </div>
+
+          <!-- File Grid -->
+          <div class="card">
+            <div id="fileGrid" class="file-grid">
+              <div class="text-center text-muted" style="grid-column: 1/-1; padding: 40px;">
+                Chọn một danh mục để xem file
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Create Folder Modal -->
+  <div class="modal-overlay" id="createFolderModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Tạo thư mục mới</h3>
+        <button class="modal-close" onclick="closeModal('createFolderModal')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Tên thư mục</label>
+          <input type="text" id="newFolderName" class="form-input" placeholder="VD: MyPlugins">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('createFolderModal')">Hủy</button>
+        <button class="btn btn-primary" onclick="createFolder()">Tạo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rename Modal -->
+  <div class="modal-overlay" id="renameModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Đổi tên</h3>
+        <button class="modal-close" onclick="closeModal('renameModal')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Tên mới</label>
+          <input type="text" id="renameInput" class="form-input">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('renameModal')">Hủy</button>
+        <button class="btn btn-primary" onclick="confirmRename()">Lưu</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Move Modal -->
+  <div class="modal-overlay" id="moveModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Di chuyển đến</h3>
+        <button class="modal-close" onclick="closeModal('moveModal')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>Chọn thư mục đích</label>
+          <select id="targetFolder" class="form-input">
+            <option value="">-- Chọn thư mục --</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('moveModal')">Hủy</button>
+        <button class="btn btn-primary" onclick="confirmMove()">Di chuyển</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentFolder = '';
+    let folders = [];
+    let selectedFiles = [];
+    let renamingFile = null;
+    let movingFiles = [];
+    let allFiles = [];
+    let currentSort = 'name';
+    let sortOrder = 'asc';
+
+    // Auth check
+    async function checkAuth() {
+      const res = await fetch('/api/auth/status');
+      const data = await res.json();
+      if (!data.authenticated) {
+        window.location.href = '/';
+      }
+    }
+
+    // Logout
+    async function logout() {
+      await fetch('/api/logout', { method: 'POST' });
+      window.location.href = '/';
+    }
+
+    // Toast
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      const icons = {
+        success: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>',
+        error: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+        warning: '<svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>'
+      };
+      
+      toast.innerHTML = `${icons[type]}<span class="toast-message">${message}</span>`;
+      container.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // Sort functions
+    function setSort(field) {
+      if (currentSort === field) {
+        sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+      } else {
+        currentSort = field;
+        sortOrder = field === 'modified' ? 'desc' : 'asc';
+      }
+      updateSortUI();
+      renderFiles();
+    }
+
+    function updateSortUI() {
+      document.querySelectorAll('.sort-btn').forEach(btn => {
+        btn.classList.remove('active');
+        const arrow = document.getElementById(`arrow-${btn.dataset.sort}`);
+        if (arrow) arrow.textContent = '';
+      });
+
+      const activeBtn = document.querySelector(`.sort-btn[data-sort="${currentSort}"]`);
+      if (activeBtn) {
+        activeBtn.classList.add('active');
+        const arrow = document.getElementById(`arrow-${currentSort}`);
+        if (arrow) {
+          arrow.textContent = sortOrder === 'asc' ? ' ↑' : ' ↓';
+        }
+      }
+    }
+
+    function sortFiles(files) {
+      return [...files].sort((a, b) => {
+        let compareA, compareB;
+
+        switch (currentSort) {
+          case 'name':
+            compareA = a.name.toLowerCase();
+            compareB = b.name.toLowerCase();
+            break;
+          case 'size':
+            compareA = a.size;
+            compareB = b.size;
+            break;
+          case 'modified':
+            compareA = new Date(a.modified).getTime();
+            compareB = new Date(b.modified).getTime();
+            break;
+          default:
+            return 0;
+        }
+
+        if (sortOrder === 'asc') {
+          return compareA > compareB ? 1 : compareA < compareB ? -1 : 0;
+        } else {
+          return compareA < compareB ? 1 : compareA > compareB ? -1 : 0;
+        }
+      });
+    }
+
+    // Modal
+    function showModal(id) {
+      document.getElementById(id).classList.add('show');
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('show');
+    }
+
+    // Load folders
+    async function loadFolders() {
+      try {
+        const res = await fetch('/api/storage/folders');
+        folders = await res.json();
+        
+        const container = document.getElementById('folderList');
+        
+        if (folders.length === 0) {
+          container.innerHTML = '<div class="text-center text-muted" style="padding: 20px; font-size: 13px;">Chưa có thư mục nào</div>';
+          return;
+        }
+        
+        container.innerHTML = `
+          <div class="folder-item ${currentFolder === '' ? 'active' : ''}" onclick="selectFolder('')">
+            <div class="folder-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+              </svg>
+            </div>
+            <span class="folder-name">Tất cả</span>
+          </div>
+          ${folders.map(f => `
+            <div class="folder-item ${currentFolder === f.name ? 'active' : ''}" onclick="selectFolder('${f.name}')">
+              <div class="folder-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                </svg>
+              </div>
+              <span class="folder-name">${f.name}</span>
+              <span class="folder-count">${f.fileCount}</span>
+            </div>
+          `).join('')}
+        `;
+      } catch (e) {
+        console.error('Load folders error:', e);
+        showToast('Không thể tải danh sách thư mục', 'error');
+      }
+    }
+
+    // Select folder
+    async function selectFolder(folder) {
+      currentFolder = folder;
+      document.getElementById('currentPath').textContent = folder ? `/${folder}` : '/ (Tất cả)';
+      clearSelection();
+      loadFolders();
+      loadFiles(folder);
+    }
+
+    // Load files
+    async function loadFiles(folder = '') {
+      try {
+        const res = await fetch(`/api/storage/files?folder=${encodeURIComponent(folder)}`);
+        const files = await res.json();
+        allFiles = files.filter(f => !f.isDirectory);
+        updateSortUI();
+        renderFiles();
+      } catch (e) {
+        console.error('Load files error:', e);
+        showToast('Không thể tải danh sách file', 'error');
+      }
+    }
+
+    // Render files with sorting
+    function renderFiles() {
+      const container = document.getElementById('fileGrid');
+      const fileCount = document.getElementById('fileCount');
+      
+      if (allFiles.length === 0) {
+        container.innerHTML = '<div class="text-center text-muted" style="grid-column: 1/-1; padding: 40px;">Thư mục trống</div>';
+        fileCount.textContent = '0 file';
+        return;
+      }
+
+      const sortedFiles = sortFiles(allFiles);
+      fileCount.textContent = `${sortedFiles.length} file`;
+      
+      container.innerHTML = sortedFiles.map(file => `
+        <div class="file-card ${selectedFiles.includes(file.path) ? 'selected' : ''}" 
+             onclick="toggleFileSelection('${file.path}', event)"
+             ondblclick="downloadFile('${file.path}')">
+          <div class="file-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+          </div>
+          <div class="file-name" title="${file.name}">${file.name}</div>
+          <div class="file-meta">${formatSize(file.size)}</div>
+          <div class="table-actions mt-1">
+            <button class="btn btn-icon btn-secondary" onclick="event.stopPropagation(); showRenameModal('${file.path}', '${file.name}')" title="Đổi tên">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
+            <button class="btn btn-icon btn-secondary" onclick="event.stopPropagation(); downloadFile('${file.path}')" title="Tải xuống">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+            </button>
+            <button class="btn btn-icon btn-danger" onclick="event.stopPropagation(); deleteFile('${file.path}')" title="Xóa">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Format file size
+    function formatSize(bytes) {
+      if (bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    }
+
+    // File selection
+    function toggleFileSelection(path, event) {
+      if (event.ctrlKey || event.metaKey) {
+        if (selectedFiles.includes(path)) {
+          selectedFiles = selectedFiles.filter(f => f !== path);
+        } else {
+          selectedFiles.push(path);
+        }
+      } else {
+        if (selectedFiles.length === 1 && selectedFiles[0] === path) {
+          selectedFiles = [];
+        } else {
+          selectedFiles = [path];
+        }
+      }
+      updateSelectionUI();
+      renderFiles();
+    }
+
+    function clearSelection() {
+      selectedFiles = [];
+      updateSelectionUI();
+    }
+
+    function updateSelectionUI() {
+      const actionsDiv = document.getElementById('selectedActions');
+      const countSpan = document.getElementById('selectedCount');
+      
+      if (selectedFiles.length > 0) {
+        actionsDiv.classList.remove('hidden');
+        countSpan.textContent = `${selectedFiles.length} file đã chọn`;
+      } else {
+        actionsDiv.classList.add('hidden');
+      }
+    }
+
+    // Drag & Drop
+    function handleDragOver(e) {
+      e.preventDefault();
+      document.getElementById('uploadZone').classList.add('drag-over');
+    }
+
+    function handleDragLeave(e) {
+      e.preventDefault();
+      document.getElementById('uploadZone').classList.remove('drag-over');
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      document.getElementById('uploadZone').classList.remove('drag-over');
+      
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        uploadFiles(files);
+      }
+    }
+
+    function handleFileSelect(e) {
+      const files = e.target.files;
+      if (files.length > 0) {
+        uploadFiles(files);
+      }
+      e.target.value = '';
+    }
+
+    // Upload
+    async function uploadFiles(files) {
+      const formData = new FormData();
+      formData.append('folder', currentFolder || 'Uploads');
+      
+      for (const file of files) {
+        formData.append('files', file);
+      }
+      
+      try {
+        showToast(`Đang tải lên ${files.length} file...`, 'warning');
+        
+        const res = await fetch('/api/storage/upload', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const data = await res.json();
+        
+        if (data.success) {
+          showToast(data.message, 'success');
+          loadFolders();
+          loadFiles(currentFolder);
+        } else {
+          showToast(data.error || 'Tải lên thất bại', 'error');
+        }
+      } catch (e) {
+        console.error('Upload error:', e);
+        showToast('Lỗi khi tải lên file', 'error');
+      }
+    }
+
+    // Delete
+    async function deleteFile(path) {
+      if (!confirm(`Bạn có chắc muốn xóa: ${path}?`)) return;
+      
+      try {
+        const res = await fetch('/api/storage/file', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filePath: path })
+        });
+        
+        const data = await res.json();
+        
+        if (data.success) {
+          showToast('Đã xóa file', 'success');
+          loadFolders();
+          loadFiles(currentFolder);
+        } else {
+          showToast(data.error || 'Xóa thất bại', 'error');
+        }
+      } catch (e) {
+        console.error('Delete error:', e);
+        showToast('Lỗi khi xóa file', 'error');
+      }
+    }
+
+    async function deleteSelected() {
+      if (selectedFiles.length === 0) return;
+      if (!confirm(`Xóa ${selectedFiles.length} file đã chọn?`)) return;
+      
+      for (const path of selectedFiles) {
+        await fetch('/api/storage/file', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ filePath: path })
+        });
+      }
+      
+      showToast(`Đã xóa ${selectedFiles.length} file`, 'success');
+      clearSelection();
+      loadFolders();
+      loadFiles(currentFolder);
+    }
+
+    // Rename
+    function showRenameModal(path, name) {
+      renamingFile = path;
+      document.getElementById('renameInput').value = name;
+      showModal('renameModal');
+    }
+
+    async function confirmRename() {
+      const newName = document.getElementById('renameInput').value.trim();
+      if (!newName) {
+        showToast('Tên không được để trống', 'error');
+        return;
+      }
+      
+      try {
+        const res = await fetch('/api/storage/rename', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ oldPath: renamingFile, newName })
+        });
+        
+        const data = await res.json();
+        
+        if (data.success) {
+          showToast('Đã đổi tên thành công', 'success');
+          closeModal('renameModal');
+          loadFiles(currentFolder);
+        } else {
+          showToast(data.error || 'Đổi tên thất bại', 'error');
+        }
+      } catch (e) {
+        console.error('Rename error:', e);
+        showToast('Lỗi khi đổi tên', 'error');
+      }
+    }
+
+    // Move
+    function moveSelected() {
+      if (selectedFiles.length === 0) return;
+      movingFiles = [...selectedFiles];
+      
+      const select = document.getElementById('targetFolder');
+      select.innerHTML = '<option value="">-- Chọn thư mục --</option>' +
+        folders.map(f => `<option value="${f.name}">${f.name}</option>`).join('');
+      
+      showModal('moveModal');
+    }
+
+    async function confirmMove() {
+      const targetFolder = document.getElementById('targetFolder').value;
+      if (!targetFolder) {
+        showToast('Vui lòng chọn thư mục đích', 'error');
+        return;
+      }
+      
+      try {
+        for (const path of movingFiles) {
+          await fetch('/api/storage/move', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filePath: path, targetFolder })
+          });
+        }
+        
+        showToast(`Đã di chuyển ${movingFiles.length} file`, 'success');
+        closeModal('moveModal');
+        clearSelection();
+        loadFolders();
+        loadFiles(currentFolder);
+      } catch (e) {
+        console.error('Move error:', e);
+        showToast('Lỗi khi di chuyển', 'error');
+      }
+    }
+
+    // Download
+    function downloadFile(path) {
+      const parts = path.split('/');
+      if (parts.length >= 2) {
+        window.open(`/api/storage/download/${parts[0]}/${parts.slice(1).join('/')}`, '_blank');
+      }
+    }
+
+    // Create folder
+    function showCreateFolderModal() {
+      document.getElementById('newFolderName').value = '';
+      showModal('createFolderModal');
+    }
+
+    async function createFolder() {
+      const name = document.getElementById('newFolderName').value.trim();
+      if (!name) {
+        showToast('Tên thư mục không được để trống', 'error');
+        return;
+      }
+      
+      try {
+        const res = await fetch('/api/storage/create-folder', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ folderName: name })
+        });
+        
+        const data = await res.json();
+        
+        if (data.success) {
+          showToast('Đã tạo thư mục', 'success');
+          closeModal('createFolderModal');
+          loadFolders();
+        } else {
+          showToast(data.error || 'Tạo thư mục thất bại', 'error');
+        }
+      } catch (e) {
+        console.error('Create folder error:', e);
+        showToast('Lỗi khi tạo thư mục', 'error');
+      }
+    }
+
+    // Upload zone click
+    document.getElementById('uploadZone').addEventListener('click', () => {
+      document.getElementById('fileInput').click();
+    });
+
+    // Init
+    checkAuth();
+    loadFolders();
+    selectFolder('');
+  </script>
+</body>
+</html>

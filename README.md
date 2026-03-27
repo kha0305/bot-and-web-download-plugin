@@ -1,0 +1,160 @@
+# Bot + Web Download Plugin
+
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![discord.js](https://img.shields.io/badge/discord.js-v14-5865F2?logo=discord&logoColor=white)](https://discord.js.org/)
+[![Express](https://img.shields.io/badge/Express-4.x-000000?logo=express&logoColor=white)](https://expressjs.com/)
+
+Hệ thống gồm:
+- Discord bot để upload, tìm kiếm, tải plugin/resources.
+- Dashboard admin để quản lý file, thống kê, upload trực tiếp.
+- Trang public `/downloads` để người dùng tải plugin và dịch nhanh file config/text theo ngữ cảnh Minecraft.
+
+## Tính năng chính
+
+- Quản lý kho plugin/resources theo file thực trong `data/files`.
+- Tìm kiếm và tải nhanh qua lệnh Discord (`/search`, `/download`, `/favorites`, ...).
+- Dashboard web admin có login bằng Discord ID (`ADMIN_ID`).
+- Web public download + bộ lọc danh mục + phân trang.
+- Dịch văn bản/file với 2 engine:
+  - Google Translate (miễn phí).
+  - ChatGPT/OpenAI-compatible (OpenAI hoặc AgentRouter).
+- Hỗ trợ dịch nhiều định dạng:
+  - File text/config: `.yml`, `.yaml`, `.ym`, `.txt`, `.md`, `.json`, `.properties`, `.conf`, `.lang`, `.toml`, `.ini`
+  - Archive: `.jar`, `.zip` (tự động quét và chọn file config/lang phù hợp để dịch).
+- Skill profile dịch (smooth/precision/economy/strict), chọn model và ngôn ngữ đích.
+- Ước lượng token + chi phí USD theo model, có cache để giảm quota.
+
+## Cấu trúc thư mục
+
+```text
+commands/          # Slash commands (admin/user)
+interactions/      # Button/modal handlers
+utils/             # Core logic: Translator, PluginManager, ...
+dashboard/         # Admin dashboard + public downloads page
+data/              # Dữ liệu runtime (plugins, files, stats, cache)
+docs/              # Tài liệu bổ sung
+index.js           # Entry bot
+deploy-commands.js # Đăng ký slash commands
+```
+
+## Yêu cầu môi trường
+
+- Node.js 18+ (khuyến nghị LTS mới).
+- Discord Bot Token + `CLIENT_ID`.
+- Quyền ghi file tại thư mục dự án (để lưu data/cache/upload).
+
+## Cài đặt nhanh
+
+1. Cài dependencies:
+
+```bash
+npm install
+```
+
+2. Tạo file `.env` từ mẫu dưới đây:
+
+```env
+# Discord
+DISCORD_TOKEN=your_token_here
+CLIENT_ID=your_client_id_here
+GUILD_ID=your_test_guild_id_here
+ADMIN_ID=123456789012345678,987654321098765432
+
+# Server
+DASHBOARD_PORT=26012
+PUBLIC_BASE_URL=http://localhost:26012
+SESSION_SECRET=change-me
+
+# AI provider (OpenAI-compatible)
+OPENAI_API_BASE=https://agentrouter.org/v1
+OPENAI_API_KEY=
+AGENT_ROUTER_TOKEN=your_agentrouter_token_here
+
+# Translation defaults
+OPENAI_TRANSLATE_MODEL=gpt-5-nano
+OPENAI_TRANSLATE_MODELS=gpt-5-nano,gpt-4o-mini,gpt-4.1-mini,deepseek-r1-0528,deepseek-v3.1,deepseek-v3.2,glm-4.5,glm-4.6
+OPENAI_MODEL_PRICING_JSON={"gpt-5-nano":{"input":0.05,"output":0.4},"deepseek-r1-0528":{"input":0.55,"output":2.19},"deepseek-v3.1":{"input":0.56,"output":1.68},"deepseek-v3.2":{"input":0.28,"output":0.42},"glm-4.5":{"input":0.6,"output":2.2},"glm-4.6":{"input":0.6,"output":2.2}}
+TRANSLATE_SKILL=minecraft_precision
+TRANSLATE_TARGET_LANG=vi
+TRANSLATE_BATCH_SIZE=40
+TRANSLATE_CACHE_LIMIT=8000
+WEB_TRANSLATE_FILE_MAX_MB=30
+```
+
+3. Đăng ký slash commands:
+
+```bash
+node deploy-commands.js
+```
+
+4. Chạy bot + dashboard:
+
+```bash
+npm start
+```
+
+Hoặc chạy multi-instance script (nếu bạn đang dùng kiến trúc nhiều shard/process):
+
+```bash
+npm run start-multi
+```
+
+## Truy cập web
+
+- Admin dashboard: `http://localhost:<DASHBOARD_PORT>/`
+- Public downloads + dịch file: `http://localhost:<DASHBOARD_PORT>/downloads`
+
+## API public
+
+- `GET /api/public/categories`
+- `GET /api/public/plugins?search=&category=&page=1&limit=24`
+- `GET /api/public/download/:pluginId`
+- `GET /api/public/translate/meta`
+- `POST /api/public/translate/text`
+- `POST /api/public/translate/file`
+
+## Các lệnh Discord tiêu biểu
+
+- User:
+  - `/search`, `/download`, `/favorites`, `/history`, `/menu`, `/dich`, `/status`
+- Admin:
+  - `/upload`, `/scan`, `/autoscan`, `/reload`, `/admin`
+
+## Dịch file Minecraft
+
+- Lệnh bot:
+  - `/dich file:<file> model:<model_id> lang:<ma_ngon_ngu>`
+- Web `/downloads`:
+  - Chọn tab `Dịch Minecraft`.
+  - Chọn engine/model/skill/language.
+  - Upload file text hoặc `.jar/.zip` để hệ thống auto-detect file config/lang hợp lệ.
+
+## Troubleshooting
+
+### 1) Lỗi `401` khi dịch ChatGPT/AgentRouter
+
+Kiểm tra:
+- `OPENAI_API_BASE` đúng provider chưa (`https://agentrouter.org/v1` hoặc OpenAI base).
+- Token/key còn hiệu lực và có quyền model đang chọn.
+- Nếu dùng AgentRouter, ưu tiên dùng `AGENT_ROUTER_TOKEN` và để `OPENAI_API_KEY` trống để tránh nhầm.
+
+### 2) Không hiện giá model trong dropdown
+
+- Thêm model vào `OPENAI_TRANSLATE_MODELS`.
+- Bổ sung giá trong `OPENAI_MODEL_PRICING_JSON` theo đơn vị USD / 1M token.
+
+### 3) Dịch `.jar` không ra kết quả mong muốn
+
+- Đảm bảo trong archive có file config/lang hợp lệ.
+- Hệ thống chỉ dịch các file text/config, không dịch class/binary.
+
+## Bảo mật
+
+- Không commit `.env`, token hoặc file chứa secret.
+- Nên thay `SESSION_SECRET` trước khi deploy production.
+- Nếu public internet, đặt reverse proxy + HTTPS.
+
+## Roadmap
+
+Xem chi tiết tại `ROADMAP.md`.
+
