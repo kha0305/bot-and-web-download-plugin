@@ -166,6 +166,10 @@ const WEB_TRANSLATE_FILE_MAX_MB = parsePositiveInt(
 const WEB_TRANSLATE_FILE_MAX_BYTES = WEB_TRANSLATE_FILE_MAX_MB * 1024 * 1024;
 const STORAGE_ALLOWED_EXT_TEXT = formatExtensionList(STORAGE_UPLOAD_EXTENSIONS);
 const TRANSLATE_ALLOWED_EXT_TEXT = formatExtensionList(TRANSLATE_UPLOAD_EXTENSIONS);
+const TRANSLATE_FALLBACK_TO_GOOGLE =
+  String(process.env.TRANSLATE_FALLBACK_TO_GOOGLE || "true")
+    .trim()
+    .toLowerCase() !== "false";
 
 function normalizeTranslateEngine(engineInput) {
   return String(engineInput || "").toLowerCase() === "chatgpt"
@@ -183,6 +187,23 @@ function normalizeTranslateModel(modelInput) {
 
 function normalizeTranslateTargetLanguage(targetLanguageInput) {
   return Translator.normalizeTargetLanguageId(targetLanguageInput);
+}
+
+function extractProviderErrorMessage(error) {
+  return (
+    error?.response?.data?.error?.message ||
+    error?.response?.data?.message ||
+    error?.message ||
+    ""
+  );
+}
+
+function isChatgptAuthFailure(error) {
+  const status = error?.response?.status;
+  if (status === 401 || status === 403) return true;
+  const message = String(error?.message || "");
+  if (message.includes("Missing OPENAI_API_KEY")) return true;
+  return false;
 }
 
 function buildTranslateApiError(error) {
@@ -611,7 +632,8 @@ app.get("/api/public/translate/meta", async (req, res) => {
 
 app.post("/api/public/translate/text", async (req, res) => {
   try {
-    const engine = normalizeTranslateEngine(req.body?.engine);
+    const requestedEngine = normalizeTranslateEngine(req.body?.engine);
+    let engine = requestedEngine;
     const skill = normalizeTranslateSkill(req.body?.skill);
     const model = normalizeTranslateModel(req.body?.model);
     const targetLanguage = normalizeTranslateTargetLanguage(
@@ -636,22 +658,53 @@ app.post("/api/public/translate/text", async (req, res) => {
       });
     }
 
+    let fallbackUsed = false;
+    let fallbackReason = "";
     if (engine === "chatgpt" && !Translator.getChatgptApiKey()) {
-      return res
-        .status(503)
-        .json({ error: "Server chua cau hinh OPENAI_API_KEY/AGENT_ROUTER_TOKEN" });
+      if (!TRANSLATE_FALLBACK_TO_GOOGLE) {
+        return res
+          .status(503)
+          .json({ error: "Server chua cau hinh OPENAI_API_KEY/AGENT_ROUTER_TOKEN" });
+      }
+      engine = "google";
+      fallbackUsed = true;
+      fallbackReason = "Server chưa cấu hình ChatGPT key/token.";
     }
 
-    const translated = await Translator.translateText(trimmed, engine, {
-      skill,
-      model,
-      targetLanguage,
-    });
+    let translated;
+    try {
+      translated = await Translator.translateText(trimmed, engine, {
+        skill,
+        model,
+        targetLanguage,
+      });
+    } catch (error) {
+      if (
+        requestedEngine === "chatgpt" &&
+        TRANSLATE_FALLBACK_TO_GOOGLE &&
+        isChatgptAuthFailure(error)
+      ) {
+        fallbackUsed = true;
+        fallbackReason =
+          extractProviderErrorMessage(error) ||
+          "ChatGPT provider lỗi xác thực, đã tự chuyển sang Google.";
+        translated = await Translator.translateText(trimmed, "google", {
+          skill,
+          model,
+          targetLanguage,
+        });
+      } else {
+        throw error;
+      }
+    }
 
     res.json({
       translatedText: translated.translatedText,
       engineName: translated.engineName,
       modelUsed: translated.modelUsed,
+      requestedEngine,
+      fallbackUsed,
+      fallbackReason: fallbackUsed ? fallbackReason : null,
       skillId: translated.skillId,
       skillName: translated.skillName,
       targetLanguageId: translated.targetLanguageId,
@@ -669,7 +722,8 @@ app.post(
   translationUpload.single("file"),
   async (req, res) => {
     try {
-      const engine = normalizeTranslateEngine(req.body?.engine);
+      const requestedEngine = normalizeTranslateEngine(req.body?.engine);
+      let engine = requestedEngine;
       const skill = normalizeTranslateSkill(req.body?.skill);
       const model = normalizeTranslateModel(req.body?.model);
       const targetLanguage = normalizeTranslateTargetLanguage(
@@ -681,10 +735,17 @@ app.post(
         return res.status(400).json({ error: "Khong co file duoc gui len" });
       }
 
+      let fallbackUsed = false;
+      let fallbackReason = "";
       if (engine === "chatgpt" && !Translator.getChatgptApiKey()) {
-        return res
-          .status(503)
-          .json({ error: "Server chua cau hinh OPENAI_API_KEY/AGENT_ROUTER_TOKEN" });
+        if (!TRANSLATE_FALLBACK_TO_GOOGLE) {
+          return res
+            .status(503)
+            .json({ error: "Server chua cau hinh OPENAI_API_KEY/AGENT_ROUTER_TOKEN" });
+        }
+        engine = "google";
+        fallbackUsed = true;
+        fallbackReason = "Server chưa cấu hình ChatGPT key/token.";
       }
 
       const originalName = path.basename(uploaded.originalname || "config.yml");
@@ -693,21 +754,49 @@ app.post(
         originalName,
         targetLanguage,
       );
-      const translated = await Translator.translateContent(
-        preparedInput.content,
-        engine,
-        {
-          skill,
-          model,
-          targetLanguage,
-        },
-      );
+      let translated;
+      try {
+        translated = await Translator.translateContent(
+          preparedInput.content,
+          engine,
+          {
+            skill,
+            model,
+            targetLanguage,
+          },
+        );
+      } catch (error) {
+        if (
+          requestedEngine === "chatgpt" &&
+          TRANSLATE_FALLBACK_TO_GOOGLE &&
+          isChatgptAuthFailure(error)
+        ) {
+          fallbackUsed = true;
+          fallbackReason =
+            extractProviderErrorMessage(error) ||
+            "ChatGPT provider lỗi xác thực, đã tự chuyển sang Google.";
+          translated = await Translator.translateContent(
+            preparedInput.content,
+            "google",
+            {
+              skill,
+              model,
+              targetLanguage,
+            },
+          );
+        } else {
+          throw error;
+        }
+      }
 
       res.json({
         fileName: preparedInput.outputFileName,
         translatedContent: translated.outputContent,
         engineName: translated.engineName,
         modelUsed: translated.modelUsed,
+        requestedEngine,
+        fallbackUsed,
+        fallbackReason: fallbackUsed ? fallbackReason : null,
         skillId: translated.skillId,
         skillName: translated.skillName,
         targetLanguageId: translated.targetLanguageId,

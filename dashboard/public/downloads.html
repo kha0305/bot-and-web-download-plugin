@@ -601,8 +601,11 @@
 
         textResult.value = data.translatedText || "";
         const skillInfo = data.skillName ? ` • ${data.skillName}` : "";
+        const fallbackInfo = data.fallbackUsed
+          ? ` • Fallback: Google (${data.fallbackReason || "ChatGPT lỗi xác thực"})`
+          : "";
         let costInfo = "";
-        if (data.cost && engine === "chatgpt") {
+        if (data.cost && engine === "chatgpt" && !data.fallbackUsed) {
           const usage = data.cost.actualUsage || data.cost.estimatedUsage;
           const usd = data.cost.actualUsd ?? data.cost.estimatedUsd;
           const usdText = Number.isFinite(Number(usd))
@@ -613,7 +616,7 @@
         const langInfo = ` • Lang: ${data.targetLanguageId || targetLanguage}`;
         setInlineStatus(
           textTranslateStatus,
-          `Hoàn tất bằng ${data.engineName}${skillInfo}${langInfo}${costInfo}.`,
+          `Hoàn tất bằng ${data.engineName}${skillInfo}${langInfo}${costInfo}${fallbackInfo}.`,
           "success",
         );
       } catch (error) {
@@ -684,6 +687,9 @@
         const usdText = Number.isFinite(Number(usd))
           ? `$${Number(usd).toFixed(4)}`
           : "N/A";
+        const fallbackLine = data.fallbackUsed
+          ? `\nFallback: Google (${data.fallbackReason || "ChatGPT lỗi xác thực"})`
+          : "";
         fileTranslateStats.textContent =
           `Engine: ${data.engineName}\n` +
           `Model: ${data.modelUsed || model}\n` +
@@ -695,6 +701,7 @@
           `Dùng cache: ${stats.cacheHits ?? 0}\n` +
           `Token: ${usage?.totalTokens || 0} (in ${usage?.inputTokens || 0} / out ${usage?.outputTokens || 0})\n` +
           `Cost (USD): ${usdText}` +
+          fallbackLine +
           detectHint;
         fileTranslateStats.classList.remove("hidden");
 

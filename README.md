@@ -115,6 +115,8 @@ Kiểm tra:
 - `OPENAI_API_BASE` đúng provider chưa (`https://agentrouter.org/v1` hoặc OpenAI base).
 - Token/key còn hiệu lực và có quyền model đang chọn.
 - Nếu dùng AgentRouter, ưu tiên dùng `AGENT_ROUTER_TOKEN` và để `OPENAI_API_KEY` trống để tránh nhầm.
+- Có thể bật fallback tự động sang Google để không gián đoạn dịch:
+  - `TRANSLATE_FALLBACK_TO_GOOGLE=true`
 
 ### 2) Không hiện giá model trong dropdown
 
