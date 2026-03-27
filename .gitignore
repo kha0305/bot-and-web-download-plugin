@@ -10,6 +10,7 @@ _pack_*/
 bot-dis-plugin-host-lite-*/
 VI_English.backup-*.yml
 VI_English.before-rerender-*.yml
+VI_English*.yml
 
 # Runtime data (should not be versioned)
 data/*.json
