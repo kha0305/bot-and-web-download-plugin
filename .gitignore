@@ -4,3 +4,15 @@ data/files/*
 !data/files/.gitkeep
 *.zip
 data/logs/*.txt
+
+# Backup/build snapshots (local only)
+_pack_*/
+bot-dis-plugin-host-lite-*/
+VI_English.backup-*.yml
+VI_English.before-rerender-*.yml
+
+# Runtime data (should not be versioned)
+data/*.json
+!data/.gitkeep
+!data/files/.gitkeep
+!data/logs/.gitkeep
